@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ujianpab/home.dart';
+import 'package:ujianpab/listTable.dart';
 
 class bottomnavigationbar extends StatefulWidget {
   final int initialIndex;
@@ -13,7 +15,7 @@ class bottomnavigationbar extends StatefulWidget {
 class _bottomnavigationbarState extends State<bottomnavigationbar> {
   int _selectedIndex = 0;
 
-  List<Widget> _screenList = [];
+  List<Widget> _screenList = [home(), listTable()];
 
   void onItemTapped(int index) {
     setState(() {
