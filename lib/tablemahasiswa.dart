@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ujianpab/widget/table1/dialog-table1.dart';
+import 'package:ujianpab/widget/table1/dialog-add-table1.dart';
 import 'package:ujianpab/services/fetchtable1.dart';
+import 'package:ujianpab/widget/table1/dialog-update-table1.dart';
 
 class tablemahasiswa extends StatelessWidget {
   @override
@@ -10,10 +11,12 @@ class tablemahasiswa extends StatelessWidget {
         title: Text('List Mahasiswa'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchtable1.fetchData(),
+        future: FetchTable1.fetchData(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final data = snapshot.data!;
+            // ... (kode sebelumnya)
+
             return ListView.builder(
               itemCount: data.length,
               itemBuilder: (context, index) {
@@ -21,7 +24,7 @@ class tablemahasiswa extends StatelessWidget {
                 return Card(
                   clipBehavior: Clip.hardEdge,
                   child: SizedBox(
-                    height: 150,
+                    height: 200,
                     child: Row(
                       children: [
                         CircleAvatar(
@@ -38,6 +41,39 @@ class tablemahasiswa extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () {
+                                            // Tambahkan logika untuk membuka dialog edit
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                // Konversi 'id' dari String ke int
+                                                int? itemId =
+                                                    int.tryParse(item['id']);
+                                                return DialogUpdateTable1(
+                                                    id: itemId);
+                                              },
+                                            );
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () {
+                                            int? itemId =
+                                                int.tryParse(item['id']);
+                                            deleteData(itemId!);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                                 Text(
                                   item['nama'],
                                   style: TextStyle(
@@ -50,13 +86,16 @@ class tablemahasiswa extends StatelessWidget {
                                   'Umur: ${item['umur']}',
                                 ),
                                 Text(
+                                  'Alamat: ${item['alamat']}',
+                                ),
+                                Text(
                                   'Tanggal Lahir: ${item['tanggal_lahir']}',
                                 ),
                                 Text(
                                   'Gender: ${item['gender']}',
                                 ),
                                 Text(
-                                  'Gender: ${item['hobi']}',
+                                  'Hobi: ${item['hobi']}',
                                 ),
                               ],
                             ),
@@ -69,6 +108,7 @@ class tablemahasiswa extends StatelessWidget {
               },
             );
           } else if (snapshot.hasError) {
+            print('${snapshot.error}');
             return Text('Error: ${snapshot.error}');
           } else {
             return Center(child: CircularProgressIndicator());
