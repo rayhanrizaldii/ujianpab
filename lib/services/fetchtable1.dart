@@ -108,7 +108,6 @@ Future<void> createData(
 }
 
 Future<void> deleteData(int id) async {
-  // Gantilah URL_API dengan URL endpoint API Anda
   String apiUrl = 'http://127.0.0.1:81/ujianpab/delete_table1.php?id=$id';
 
   try {
