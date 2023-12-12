@@ -84,7 +84,6 @@ class _DialogTable1State extends State<DialogTable1> {
     'Membaca',
     'Memasak',
     'Bermain Musik',
-    // Tambahkan hobi lainnya di sini
   ];
 
   DateTime? selectedDate;
@@ -271,6 +270,7 @@ class _DialogTable1State extends State<DialogTable1> {
                                   alamat, hobi, _image!);
 
                               Navigator.of(context).pop();
+                              setState(() {});
                             }
                           },
                           child: Text('Simpan'),
