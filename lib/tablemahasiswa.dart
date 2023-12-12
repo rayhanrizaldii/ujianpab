@@ -3,7 +3,12 @@ import 'package:ujianpab/widget/table1/dialog-add-table1.dart';
 import 'package:ujianpab/services/fetchtable1.dart';
 import 'package:ujianpab/widget/table1/dialog-update-table1.dart';
 
-class tablemahasiswa extends StatelessWidget {
+class tablemahasiswa extends StatefulWidget {
+  @override
+  State<tablemahasiswa> createState() => _tablemahasiswaState();
+}
+
+class _tablemahasiswaState extends State<tablemahasiswa> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +20,6 @@ class tablemahasiswa extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final data = snapshot.data!;
-            // ... (kode sebelumnya)
 
             return ListView.builder(
               itemCount: data.length,
@@ -68,6 +72,7 @@ class tablemahasiswa extends StatelessWidget {
                                             int? itemId =
                                                 int.tryParse(item['id']);
                                             deleteData(itemId!);
+                                            setState(() {});
                                           },
                                         ),
                                       ],
