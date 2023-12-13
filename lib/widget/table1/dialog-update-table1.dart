@@ -6,15 +6,17 @@ import 'package:ujianpab/widget/table1/GenderRadio.dart';
 import 'package:http/http.dart' as http;
 
 class DialogUpdateTable1 extends StatefulWidget {
-  final int? id; // Add id parameter
+  final int id;
 
-  DialogUpdateTable1({Key? key, this.id}) : super(key: key);
+  DialogUpdateTable1({required this.id});
+
   @override
   _DialogUpdateTable1State createState() => _DialogUpdateTable1State();
 }
 
 class _DialogUpdateTable1State extends State<DialogUpdateTable1> {
   final _formKey = GlobalKey<FormState>();
+  late int id;
   String? genderValue;
   TextEditingController _namaController = TextEditingController();
   TextEditingController _alamatController = TextEditingController();
@@ -38,7 +40,8 @@ class _DialogUpdateTable1State extends State<DialogUpdateTable1> {
           });
 
           // Upload image to server
-          final url = 'http://127.0.0.1:81/ujianpab/update_table1.php';
+          final url =
+              'http://127.0.0.1:81/ujianpab/update_table1.php?id=${widget.id}';
           final response = await http.post(Uri.parse(url), body: {
             'image': reader.result.toString(),
           });
@@ -54,37 +57,15 @@ class _DialogUpdateTable1State extends State<DialogUpdateTable1> {
     });
   }
 
-  List<String> ageList = [
-    '18',
-    '19',
-    '20',
-    '21',
-    '22',
-    '23',
-    '24',
-    '25',
-    '26',
-    '27',
-    '28',
-    '29',
-    '30',
-    '31',
-    '32',
-    '33',
-    '34',
-    '35',
-    '36',
-    '37',
-    '38',
-    '39',
-    '40',
-  ];
+  List<String> ageList = List.generate(23, (index) => (18 + index).toString());
 
   List<String> selectedHobbies = [];
 
   List<String> hobbiesList = [
-    'Olahraga', 'Membaca', 'Memasak', 'Bermain Musik',
-    // Tambahkan hobi lainnya di sini
+    'Olahraga',
+    'Membaca',
+    'Memasak',
+    'Bermain Musik',
   ];
 
   DateTime? selectedDate;
@@ -107,27 +88,41 @@ class _DialogUpdateTable1State extends State<DialogUpdateTable1> {
   @override
   void initState() {
     super.initState();
-    // Memuat data berdasarkan ID saat initState dipanggil
-    if (widget.id != null) {
-      fetchDataById(widget.id!);
-    }
+    _fetchDataById(widget.id);
   }
 
-  void fetchDataById(int id) async {
+  void _fetchDataById(int id) async {
     try {
-      Map<String, dynamic> data = await FetchTable1.fetchDataById(id);
+      final response = await FetchTable1.fetchDataById(id);
+      // ignore: unnecessary_null_comparison
+      if (response == null) {
+        print('Empty response from the server');
+        return;
+      }
 
-      // Mengisi nilai field sesuai dengan data yang diambil
-      setState(() {
-        _namaController.text = data['nama'];
-        _alamatController.text = data['alamat'];
-        genderValue = data['gender'];
-        selectedAge = data['umur'].toString();
-        // Tambahan kode lainnya sesuai kebutuhan
-      });
+      final jsonData = response as Map<String, dynamic>;
+      if (!jsonData.containsKey('data')) {
+        print('Invalid JSON format: $response');
+        return;
+      }
+
+      _populateFormFields(jsonData['data'][0] as Map<String, dynamic>);
     } catch (e) {
       print('Error fetching data: $e');
     }
+  }
+
+  void _populateFormFields(Map<String, dynamic> data) {
+    setState(() {
+      _namaController.text = data['nama'];
+      selectedDate = DateTime.parse(data['tanggal_lahir']);
+      _alamatController.text = data['alamat'];
+      genderValue = data['gender'];
+      selectedAge = data['umur'].toString();
+      selectedHobbies = data['hobi'].split(', ');
+      // Load image if available
+      // Note: You need to implement the logic for loading the image here
+    });
   }
 
   @override
@@ -285,19 +280,31 @@ class _DialogUpdateTable1State extends State<DialogUpdateTable1> {
                         margin: EdgeInsets.all(16),
                         child: TextButton(
                           onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              String nama = _namaController.text;
-                              DateTime? tanggalLahir = selectedDate;
-                              int umur = int.parse(selectedAge!);
-                              String gender = genderValue!;
-                              String alamat = _alamatController.text;
-                              String hobi = selectedHobbies.join(', ');
+                            try {
+                              if (_formKey.currentState!.validate()) {
+                                String nama = _namaController.text;
+                                DateTime? tanggalLahir = selectedDate;
+                                int umur = int.parse(selectedAge!);
+                                String gender = genderValue!;
+                                String alamat = _alamatController.text;
+                                String hobi = selectedHobbies.join(', ');
 
-                              // Call createData with the correct arguments
-                              createData(nama, tanggalLahir!, umur, gender,
-                                  alamat, hobi, _image!);
+                                // Call updateData with the correct arguments, including the ID
+                                await updateData(
+                                  widget.id,
+                                  nama,
+                                  tanggalLahir!,
+                                  umur,
+                                  gender,
+                                  alamat,
+                                  hobi,
+                                  _image,
+                                );
 
-                              Navigator.of(context).pop();
+                                Navigator.of(context).pop();
+                              }
+                            } catch (e) {
+                              _handleError(e);
                             }
                           },
                           child: Text('Simpan'),
@@ -313,4 +320,11 @@ class _DialogUpdateTable1State extends State<DialogUpdateTable1> {
       ),
     );
   }
+
+  // Implement this method based on how you want to handle the update on the server
+}
+
+void _handleError(Object error) {
+  print('Error: $error');
+  // Handle the error appropriately, e.g., show a snackbar or dialog to the user
 }
