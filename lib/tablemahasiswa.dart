@@ -20,7 +20,6 @@ class _tablemahasiswaState extends State<tablemahasiswa> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final data = snapshot.data!;
-
             return ListView.builder(
               itemCount: data.length,
               itemBuilder: (context, index) {
@@ -31,11 +30,14 @@ class _tablemahasiswaState extends State<tablemahasiswa> {
                     height: 200,
                     child: Row(
                       children: [
-                        CircleAvatar(
-                          radius: 35,
-                          backgroundImage: NetworkImage(
-                            'http://127.0.0.1:81/ujianpab/images/' +
-                                item['foto'],
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CircleAvatar(
+                            radius: 35,
+                            backgroundImage: NetworkImage(
+                              'http://127.0.0.1:81/ujianpab/images/' +
+                                  item['foto'],
+                            ),
                           ),
                         ),
                         Expanded(
@@ -53,15 +55,14 @@ class _tablemahasiswaState extends State<tablemahasiswa> {
                                         IconButton(
                                           icon: Icon(Icons.edit),
                                           onPressed: () {
-                                            // Tambahkan logika untuk membuka dialog edit
+                                            print(item['id']);
                                             showDialog(
                                               context: context,
                                               builder: (BuildContext context) {
-                                                // Konversi 'id' dari String ke int
                                                 int? itemId =
                                                     int.tryParse(item['id']);
                                                 return DialogUpdateTable1(
-                                                    id: itemId);
+                                                    id: itemId!);
                                               },
                                             );
                                           },
