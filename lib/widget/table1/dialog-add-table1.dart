@@ -268,9 +268,9 @@ class _DialogTable1State extends State<DialogTable1> {
                               // Call createData with the correct arguments
                               createData(nama, tanggalLahir!, umur, gender,
                                   alamat, hobi, _image!);
+                              setState(() {});
 
                               Navigator.of(context).pop();
-                              setState(() {});
                             }
                           },
                           child: Text('Simpan'),
