@@ -55,7 +55,7 @@ class _tablemahasiswaState extends State<tablemahasiswa> {
                                         IconButton(
                                           icon: Icon(Icons.edit),
                                           onPressed: () {
-                                            print(item['id']);
+                                            // print(item['id']);
                                             showDialog(
                                               context: context,
                                               builder: (BuildContext context) {
