@@ -59,53 +59,56 @@ class FetchTable1 {
       throw Exception('Gagal mengambil data: ${response.statusCode}');
     }
   }
-}
 
-Future<void> createData(
-  String nama,
-  DateTime tanggalLahir,
-  int umur,
-  String gender,
-  String alamat,
-  String hobi,
-  html.File imagePath,
-) async {
-  var url = Uri.parse(
-      'http://localhost:81/ujianpab/create_table1.php'); // Replace with the correct URL
-
-  var request = http.MultipartRequest('POST', url);
-
-  request.fields['nama'] = nama;
-  request.fields['tanggal_lahir'] =
-      DateFormat('dd-MM-yyyy').format(tanggalLahir);
-  request.fields['umur'] = umur.toString();
-  request.fields['gender'] = gender;
-  request.fields['alamat'] = alamat;
-  request.fields['hobi'] = hobi;
-
-  // ignore: unnecessary_null_comparison
-  if (imagePath != null) {
-    var fileReader = html.FileReader();
-    fileReader.readAsArrayBuffer(imagePath);
-
-    await fileReader
-        .onLoad.first; // Wait for the FileReader to finish loading the file
-
-    var fileBytes = fileReader.result as List<int>;
-
-    request.files.add(http.MultipartFile.fromBytes('foto', fileBytes,
-        filename: imagePath.name));
-
+  static Future<bool> createData(
+    String nama,
+    DateTime tanggalLahir,
+    int umur,
+    String gender,
+    String alamat,
+    String hobi,
+    html.File imagePath,
+  ) async {
     try {
-      var response = await request.send();
-      if (response.statusCode == 200) {
-        print('Data dan gambar berhasil disimpan.');
+      var url = Uri.parse('http://localhost:81/ujianpab/create_table1.php');
+      var request = http.MultipartRequest('POST', url);
+
+      request.fields['nama'] = nama;
+      request.fields['tanggal_lahir'] =
+          DateFormat('dd-MM-yyyy').format(tanggalLahir);
+      request.fields['umur'] = umur.toString();
+      request.fields['gender'] = gender;
+      request.fields['alamat'] = alamat;
+      request.fields['hobi'] = hobi;
+
+      // ignore: unnecessary_null_comparison
+      if (imagePath != null) {
+        var fileReader = html.FileReader();
+        fileReader.readAsArrayBuffer(imagePath);
+
+        await fileReader.onLoad.first;
+
+        var fileBytes = fileReader.result as List<int>;
+
+        request.files.add(http.MultipartFile.fromBytes('foto', fileBytes,
+            filename: imagePath.name));
+
+        var response = await request.send();
+        if (response.statusCode == 200) {
+          print('Data dan gambar berhasil disimpan.');
+          return true; // Indicate success
+        } else {
+          print(
+              'Gagal menyimpan data dan gambar. Status code: ${response.statusCode}');
+          return false; // Indicate failure
+        }
       } else {
-        print(
-            'Gagal menyimpan data dan gambar. Status code: ${response.statusCode}');
+        print('imagePath is null. Gagal menyimpan data dan gambar.');
+        return false; // Indicate failure
       }
     } catch (e) {
       print('Terjadi kesalahan saat mengirim permintaan: $e');
+      return false; // Indicate failure
     }
   }
 }
@@ -138,31 +141,47 @@ Future<void> updateData(
   String gender,
   String alamat,
   String hobi,
-  html.File? image,
+  html.File imagePath,
 ) async {
-  try {
-    final response = await http.put(
-      Uri.parse('http://127.0.0.1:81/ujianpab/update_table1.php?id=$id'),
-      body: {
-        'nama': nama,
-        'tanggal_lahir': tanggalLahir.toString(),
-        'umur': umur.toString(),
-        'gender': gender,
-        'alamat': alamat,
-        'hobi': hobi,
-        'foto': image != null ? image.toString() : '',
-      },
-    );
+  var url = Uri.parse(
+      'http://127.0.0.1:81/ujianpab/update_table1.php'); // Ganti dengan URL API Anda
+  var request = http.MultipartRequest('POST', url);
 
-    if (response.statusCode == 200) {
-      // Data updated successfully
-      print('Data updated successfully');
-    } else {
-      // Failed to update data
-      print('Failed to update data: ${response.body}');
+  request.fields['id'] = id.toString();
+  request.fields['nama'] = nama;
+  request.fields['tanggal_lahir'] =
+      DateFormat('dd-MM-yyyy').format(tanggalLahir);
+  request.fields['umur'] = umur.toString();
+  request.fields['gender'] = gender;
+  request.fields['alamat'] = alamat;
+  request.fields['hobi'] = hobi;
+
+  // ignore: unnecessary_null_comparison
+  if (imagePath != null) {
+    try {
+      var fileReader = html.FileReader();
+      fileReader.readAsArrayBuffer(imagePath);
+
+      await fileReader.onLoad.first;
+
+      var fileBytes = fileReader.result as List<int>;
+
+      request.files.add(http.MultipartFile.fromBytes(
+        'foto',
+        fileBytes,
+        filename: imagePath.name,
+      ));
+
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        print('Data dan gambar berhasil diperbarui.');
+      } else {
+        print(
+            'Gagal memperbarui data dan gambar. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Terjadi kesalahan saat mengirim permintaan: $e');
     }
-  } catch (e) {
-    // Handle errors
-    print('Error updating data: $e');
   }
 }
