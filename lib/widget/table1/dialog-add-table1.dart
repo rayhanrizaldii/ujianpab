@@ -1,6 +1,7 @@
 import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ujianpab/bottomnavigation.dart';
 import 'package:ujianpab/services/fetchtable1.dart';
 import 'package:ujianpab/widget/table1/GenderRadio.dart';
 import 'package:http/http.dart' as http;
@@ -266,11 +267,63 @@ class _DialogTable1State extends State<DialogTable1> {
                               String hobi = selectedHobbies.join(', ');
 
                               // Call createData with the correct arguments
-                              createData(nama, tanggalLahir!, umur, gender,
-                                  alamat, hobi, _image!);
-                              setState(() {});
+                              bool success = await FetchTable1.createData(
+                                  nama,
+                                  tanggalLahir!,
+                                  umur,
+                                  gender,
+                                  alamat,
+                                  hobi,
+                                  _image!);
 
-                              Navigator.of(context).pop();
+                              if (success) {
+                                // Jika berhasil, tampilkan AlertDialog
+
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Sukses'),
+                                      content:
+                                          Text('Data berhasil ditambahkan.'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      bottomnavigationbar()),
+                                            );
+                                          },
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              } else {
+                                // Jika gagal, tampilkan AlertDialog dengan pesan error
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Gagal'),
+                                      content: Text(
+                                          'Terjadi kesalahan saat menambahkan data.'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            // Tutup AlertDialog
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
                             }
                           },
                           child: Text('Simpan'),
