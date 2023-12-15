@@ -1,9 +1,11 @@
 import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:ujianpab/bottomnavigation.dart';
 import 'package:ujianpab/services/fetchtable1.dart';
 import 'package:ujianpab/widget/table1/GenderRadio.dart';
-import 'package:http/http.dart' as http;
 
 class DialogUpdateTable1 extends StatefulWidget {
   final int id;
@@ -120,6 +122,17 @@ class _DialogUpdateTable1State extends State<DialogUpdateTable1> {
       genderValue = data['gender'];
       selectedAge = data['umur'].toString();
       selectedHobbies = data['hobi'].split(', ');
+
+      // Check if 'foto' field is a String or a File
+      if (data['foto'] is String) {
+        // If it's a String, you might want to handle it accordingly (e.g., display as an image)
+        // You need to implement the logic based on your use case.
+        // _image = ...;
+      } else if (data['foto'] is html.File) {
+        // If it's a File, assign it directly
+        _image = data['foto'];
+      }
+
       // Load image if available
       // Note: You need to implement the logic for loading the image here
     });
@@ -282,6 +295,7 @@ class _DialogUpdateTable1State extends State<DialogUpdateTable1> {
                           onPressed: () async {
                             try {
                               if (_formKey.currentState!.validate()) {
+                                int id = widget.id;
                                 String nama = _namaController.text;
                                 DateTime? tanggalLahir = selectedDate;
                                 int umur = int.parse(selectedAge!);
@@ -291,17 +305,22 @@ class _DialogUpdateTable1State extends State<DialogUpdateTable1> {
 
                                 // Call updateData with the correct arguments, including the ID
                                 await updateData(
-                                  widget.id,
+                                  id,
                                   nama,
                                   tanggalLahir!,
                                   umur,
                                   gender,
                                   alamat,
                                   hobi,
-                                  _image,
+                                  _image!,
                                 );
 
-                                Navigator.of(context).pop();
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          bottomnavigationbar()),
+                                );
                               }
                             } catch (e) {
                               _handleError(e);
