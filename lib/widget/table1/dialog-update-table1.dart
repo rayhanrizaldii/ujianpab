@@ -304,7 +304,7 @@ class _DialogUpdateTable1State extends State<DialogUpdateTable1> {
                                 String hobi = selectedHobbies.join(', ');
 
                                 // Call updateData with the correct arguments, including the ID
-                                await updateData(
+                                await FetchTable1.updateData(
                                   id,
                                   nama,
                                   tanggalLahir!,
