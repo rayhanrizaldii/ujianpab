@@ -111,77 +111,77 @@ class FetchTable1 {
       return false; // Indicate failure
     }
   }
-}
 
-Future<void> deleteData(int id) async {
-  String apiUrl = 'http://127.0.0.1:81/ujianpab/delete_table1.php?id=$id';
+  static Future<void> updateData(
+    int id,
+    String nama,
+    DateTime tanggalLahir,
+    int umur,
+    String gender,
+    String alamat,
+    String hobi,
+    html.File imagePath,
+  ) async {
+    var url = Uri.parse(
+        'http://127.0.0.1:81/ujianpab/update_table1.php'); // Ganti dengan URL API Anda
+    var request = http.MultipartRequest('POST', url);
 
-  try {
-    final response = await http.delete(Uri.parse(apiUrl));
+    request.fields['id'] = id.toString();
+    request.fields['nama'] = nama;
+    request.fields['tanggal_lahir'] =
+        DateFormat('dd-MM-yyyy').format(tanggalLahir);
+    request.fields['umur'] = umur.toString();
+    request.fields['gender'] = gender;
+    request.fields['alamat'] = alamat;
+    request.fields['hobi'] = hobi;
 
-    if (response.statusCode == 200) {
-      // Data berhasil dihapus
-      print('Data dengan ID $id berhasil dihapus.');
-    } else {
-      // Gagal menghapus data, tampilkan pesan kesalahan
-      print('Gagal menghapus data. Status: ${response.statusCode}');
-      print('Response: ${response.body}');
+    // ignore: unnecessary_null_comparison
+    if (imagePath != null) {
+      try {
+        var fileReader = html.FileReader();
+        fileReader.readAsArrayBuffer(imagePath);
+
+        await fileReader.onLoad.first;
+
+        var fileBytes = fileReader.result as List<int>;
+
+        request.files.add(http.MultipartFile.fromBytes(
+          'foto',
+          fileBytes,
+          filename: imagePath.name,
+        ));
+
+        var response = await request.send();
+
+        if (response.statusCode == 200) {
+          print('Data dan gambar berhasil diperbarui.');
+        } else {
+          print(
+              'Gagal memperbarui data dan gambar. Status code: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Terjadi kesalahan saat mengirim permintaan: $e');
+      }
     }
-  } catch (error) {
-    // Tangani kesalahan jika ada
-    print('Error: $error');
   }
-}
 
-Future<void> updateData(
-  int id,
-  String nama,
-  DateTime tanggalLahir,
-  int umur,
-  String gender,
-  String alamat,
-  String hobi,
-  html.File imagePath,
-) async {
-  var url = Uri.parse(
-      'http://127.0.0.1:81/ujianpab/update_table1.php'); // Ganti dengan URL API Anda
-  var request = http.MultipartRequest('POST', url);
+  static Future<void> deleteData(int id) async {
+    String apiUrl = 'http://127.0.0.1:81/ujianpab/delete_table1.php?id=$id';
 
-  request.fields['id'] = id.toString();
-  request.fields['nama'] = nama;
-  request.fields['tanggal_lahir'] =
-      DateFormat('dd-MM-yyyy').format(tanggalLahir);
-  request.fields['umur'] = umur.toString();
-  request.fields['gender'] = gender;
-  request.fields['alamat'] = alamat;
-  request.fields['hobi'] = hobi;
-
-  // ignore: unnecessary_null_comparison
-  if (imagePath != null) {
     try {
-      var fileReader = html.FileReader();
-      fileReader.readAsArrayBuffer(imagePath);
-
-      await fileReader.onLoad.first;
-
-      var fileBytes = fileReader.result as List<int>;
-
-      request.files.add(http.MultipartFile.fromBytes(
-        'foto',
-        fileBytes,
-        filename: imagePath.name,
-      ));
-
-      var response = await request.send();
+      final response = await http.delete(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
-        print('Data dan gambar berhasil diperbarui.');
+        // Data berhasil dihapus
+        print('Data dengan ID $id berhasil dihapus.');
       } else {
-        print(
-            'Gagal memperbarui data dan gambar. Status code: ${response.statusCode}');
+        // Gagal menghapus data, tampilkan pesan kesalahan
+        print('Gagal menghapus data. Status: ${response.statusCode}');
+        print('Response: ${response.body}');
       }
-    } catch (e) {
-      print('Terjadi kesalahan saat mengirim permintaan: $e');
+    } catch (error) {
+      // Tangani kesalahan jika ada
+      print('Error: $error');
     }
   }
 }
