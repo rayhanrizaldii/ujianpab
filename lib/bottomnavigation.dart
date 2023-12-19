@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ujianpab/table1.dart';
+import 'package:ujianpab/tb_produk.dart';
 import 'package:ujianpab/tablemahasiswa.dart';
 
 class bottomnavigationbar extends StatefulWidget {
@@ -15,7 +15,7 @@ class bottomnavigationbar extends StatefulWidget {
 class _bottomnavigationbarState extends State<bottomnavigationbar> {
   int _selectedIndex = 0;
 
-  List<Widget> _screenList = [tablemahasiswa(), table1()];
+  List<Widget> _screenList = [tablemahasiswa(), tb_produk()];
 
   void onItemTapped(int index) {
     setState(() {
@@ -47,6 +47,14 @@ class _bottomnavigationbarState extends State<bottomnavigationbar> {
             BottomNavigationBarItem(
               tooltip: 'Tabel Mahasiswa',
               label: 'Tabel Mahasiswa',
+              icon: Icon(
+                Icons.local_movies_outlined,
+                color: Colors.black,
+              ),
+            ),
+            BottomNavigationBarItem(
+              tooltip: 'Chart Mahasiswa',
+              label: 'Chart Mahasiswa',
               icon: Icon(
                 Icons.local_movies_outlined,
                 color: Colors.black,
