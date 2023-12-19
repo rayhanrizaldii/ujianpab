@@ -72,7 +72,7 @@ class _tablemahasiswaState extends State<tablemahasiswa> {
                                           onPressed: () {
                                             int? itemId =
                                                 int.tryParse(item['id']);
-                                            deleteData(itemId!);
+                                            FetchTable1.deleteData(itemId!);
                                             setState(() {});
                                           },
                                         ),
